@@ -10,11 +10,17 @@ import scala.concurrent.Future
 class PublicGDaxClient(url: String) extends GDaxClient(url) {
 
   def products(): Future[Either[ErrorCode, List[GDaxProduct]]] = {
-    ws.url(url + "/products").get().map(response => {
-      logger.debug(s"Received response: ${response.body}")
-      Json.parse(response.body).validate[List[GDaxProduct]] match {
-        case success: JsSuccess[List[GDaxProduct]] => Right(success.value)
-        case JsError(e) => Left(InvalidJson(e.toString()))
+    val uri = url + "/products"
+    ws.url(uri).get().map(response => {
+      if (isValidResponse(response.status)) {
+        logger.debug(s"Sent URI: $uri. Received response: ${response.body}")
+        Json.parse(response.body).validate[List[GDaxProduct]] match {
+          case success: JsSuccess[List[GDaxProduct]] => Right(success.value)
+          case JsError(e) => Left(InvalidJson(e.toString()))
+        }
+      } else {
+        logger.debug(s"Sent URI: $uri. Response Error: ${response.status}.")
+        Left(RequestError(response.status))
       }
     })
   }

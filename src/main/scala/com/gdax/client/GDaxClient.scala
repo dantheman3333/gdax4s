@@ -23,4 +23,6 @@ abstract class GDaxClient(url: String) {
   def close() = {
     ws.close()
   }
+
+  def isValidResponse(statusCode: Int): Boolean = if(statusCode == 200) true else false
 }
