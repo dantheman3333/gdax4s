@@ -1,11 +1,7 @@
 package com.gdax.com.gdax.error
 
 sealed trait ErrorCode
-case object BadRequest extends ErrorCode
-case object Unauthorized extends ErrorCode
-case object Forbidden extends ErrorCode
-case object NotFound extends ErrorCode
-case object InternalServerError extends ErrorCode
+case class RequestError(code: Int) extends ErrorCode
 case class InvalidJson(jsonError: String, reason: Option[Throwable] = None) extends ErrorCode
 
 /*
