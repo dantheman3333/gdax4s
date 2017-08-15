@@ -1,7 +1,6 @@
 package com.gdax.client
 
-import com.gdax.com.gdax.client.PublicGDaxClient
-import com.gdax.com.gdax.error.ErrorCode
+import com.gdax.error._
 import com.gdax.models.GDaxProduct
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
@@ -13,7 +12,7 @@ class PublicGDaxClientSuite extends FunSuite with BeforeAndAfter {
   var client: PublicGDaxClient = _
 
   before {
-    client = PublicGDaxClient(url)
+    client = PublicGDaxClient(SandBoxUrl)
   }
 
   after {
@@ -21,7 +20,7 @@ class PublicGDaxClientSuite extends FunSuite with BeforeAndAfter {
   }
 
   test("get /products should return a non-empty list of products"){
-    val products: Either[ErrorCode, Array[GDaxProduct]] = Await.result(client.products(), 1.seconds)
+    val products: Either[ErrorCode, List[GDaxProduct]] = Await.result(client.products(), 1.seconds)
 
     assert(products.isRight)
     assert(products.right.get.size > 0)

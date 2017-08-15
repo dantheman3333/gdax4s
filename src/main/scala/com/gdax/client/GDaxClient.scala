@@ -1,4 +1,4 @@
-package com.gdax.com.gdax.client
+package com.gdax.client
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer

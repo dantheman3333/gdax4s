@@ -1,4 +1,4 @@
-package com.gdax.com.gdax.error
+package com.gdax.error
 
 sealed trait ErrorCode
 case class RequestError(code: Int) extends ErrorCode

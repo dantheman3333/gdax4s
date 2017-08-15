@@ -1,14 +1,11 @@
-package com.gdax.com.gdax
+package com.gdax.models
 
-
-package object client {
-
-  import play.api.libs.json._
-  import play.api.libs.json.Reads._
-  import play.api.libs.functional.syntax._
-
+object ImplicitsReads {
 
   import com.gdax.models.GDaxProduct
+  import play.api.libs.functional.syntax._
+  import play.api.libs.json.Reads._
+  import play.api.libs.json._
 
   implicit val GDaxProductReads: Reads[GDaxProduct] = (
     (__ \ "id").read[String] and
