@@ -1,7 +1,7 @@
 package com.gdax.client
 
 import com.gdax.error._
-import com.gdax.models.{Book, GDaxProduct, Time}
+import com.gdax.models.{Book, FullBook, GDaxProduct, Time}
 import com.gdax.models.ImplicitsReads._
 import play.api.libs.json.{JsError, JsSuccess, Json, Reads}
 
@@ -15,9 +15,19 @@ class PublicGDaxClient(url: String) extends GDaxClient(url) {
     publicRequest[List[GDaxProduct]](uri)
   }
 
-  def book(productId: String): Future[Either[ErrorCode, Book]] = {
+  def topBook(productId: String): Future[Either[ErrorCode, Book]] = {
     val uri = s"$url/products/$productId/book"
     publicRequest[Book](uri)
+  }
+
+  def top50Books(productId: String): Future[Either[ErrorCode, Book]] = {
+    val uri = s"$url/products/$productId/book"
+    publicRequest[Book](uri, ("level", "2"))
+  }
+
+  def fullBooks(productId: String): Future[Either[ErrorCode, FullBook]] = {
+    val uri = s"$url/products/$productId/book"
+    publicRequest[FullBook](uri, ("level", "3"))
   }
 
   //need implicit reader
@@ -28,8 +38,8 @@ class PublicGDaxClient(url: String) extends GDaxClient(url) {
   }
 */
 
-  private def publicRequest[A: Reads](uri: String): Future[Either[ErrorCode, A]] = {
-    ws.url(uri).get().map(response => {
+  private def publicRequest[A: Reads](uri: String, parameters: (String, String)*): Future[Either[ErrorCode, A]] = {
+    ws.url(uri).withQueryStringParameters(parameters: _*).get().map(response => {
       if (isValidResponse(response.status)) {
         logger.debug(s"Sent URI: $uri. Received response: ${response.body}")
         Json.parse(response.body).validate[A] match {
