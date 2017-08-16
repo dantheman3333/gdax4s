@@ -59,7 +59,13 @@ class PublicGDaxClient(url: String) extends GDaxClient(url) {
       }
     })
   }
+
+  def currencies(): Future[Either[ErrorCode, Currencies]] = {
+    val uri = s"$url/currencies"
+    publicRequest[Currencies](uri)
+  }
 }
+
 
 object PublicGDaxClient {
   def apply(url: String): PublicGDaxClient = new PublicGDaxClient(url)
