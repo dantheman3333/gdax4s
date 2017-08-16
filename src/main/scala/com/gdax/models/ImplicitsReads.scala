@@ -62,4 +62,9 @@ object ImplicitsReads {
       (__ \ "time").read[Instant]
     ) (Ticker.apply _)
 
+  implicit val CurrenciesRead: Reads[Currencies] = (
+    (__ \ "min_price").read[Double] and
+      (__ \ "id").read[String] and
+      (__ \ "name").read[String]
+    ) (Currencies.apply _)
 }

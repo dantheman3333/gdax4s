@@ -16,3 +16,5 @@ case class FullBook(sequence: Long, bids: List[FullBid], asks: List[FullAsk])
 case class Time(iso: Instant, epoch: Double)
 
 case class Ticker(trade_id: Long, price: Double, size: Double, bid: Double, ask: Double, volume: Double, time: Instant)
+
+case class Currencies(min_size: Double, id: String, name: String)
