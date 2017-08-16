@@ -1,7 +1,7 @@
 package com.gdax.client
 
 import com.gdax.error._
-import com.gdax.models.{Book, FullBook, GDaxProduct, Time}
+import com.gdax.models._
 import com.gdax.models.ImplicitsReads._
 import play.api.libs.json.{JsError, JsSuccess, Json, Reads}
 
@@ -29,6 +29,12 @@ class PublicGDaxClient(url: String) extends GDaxClient(url) {
     val uri = s"$url/products/$productId/book"
     publicRequest[FullBook](uri, ("level", "3"))
   }
+
+  def ticker(productId: String): Future[Either[ErrorCode, Ticker]] = {
+    val uri = s"$url/products/$productId/ticker"
+    publicRequest[Ticker](uri)
+  }
+
 
   def time(): Future[Either[ErrorCode, Time]] = {
     val uri = url + "/time"

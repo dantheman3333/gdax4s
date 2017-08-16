@@ -51,4 +51,15 @@ object ImplicitsReads {
     (__ \ "iso").read[Instant] and
       (__ \ "epoch").read[Double]
     ) (Time.apply _)
+
+  implicit val TickerReads: Reads[Ticker] = (
+    (__ \ "trade_id").read[Long] and
+      (__ \ "price").read[String].map[Double](_.toDouble) and
+      (__ \ "size").read[String].map[Double](_.toDouble) and
+      (__ \ "bid").read[String].map[Double](_.toDouble) and
+      (__ \ "ask").read[String].map[Double](_.toDouble) and
+      (__ \ "volume").read[String].map[Double](_.toDouble) and
+      (__ \ "time").read[Instant]
+    ) (Ticker.apply _)
+
 }
