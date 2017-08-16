@@ -38,3 +38,7 @@ case class Bid(price: Double, size: Double, numOrders: Long)
 case class Ask(price: Double, size: Double, numOrders: Long)
 case class Book(sequence: Long, bids: List[Bid], asks: List[Ask])
 
+case class FullBid(price: Double, size: Double, order_id : String)
+case class FullAsk(price: Double, size: Double, order_id : String)
+case class FullBook(sequence: Long, bids: List[FullBid], asks: List[FullAsk])
+
