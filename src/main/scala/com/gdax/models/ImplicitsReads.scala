@@ -18,4 +18,17 @@ object ImplicitsReads {
       (__ \ "margin_enabled").read[Boolean]
     ) (GDaxProduct.apply _)
 
+  implicit val BookReads: Reads[Book] = (
+    (__ \ "sequence").read[Long] and
+      (__ \ "bids").read[JsArray].map[List[Bid]](_.value.map { innerArrayJson =>
+        val innerArray = innerArrayJson.as[JsArray].value
+        Bid(innerArray(0).as[String].toDouble, innerArray(1).as[String].toDouble, innerArray(2).as[Long])
+      }.toList
+      ) and
+      (__ \ "asks").read[JsArray].map[List[Ask]](_.value.map { innerArrayJson =>
+        val innerArray = innerArrayJson.as[JsArray].value
+        Ask(innerArray(0).as[String].toDouble, innerArray(1).as[String].toDouble, innerArray(2).as[Long])
+      }.toList
+      )
+    ) (Book.apply _)
 }
