@@ -1,5 +1,7 @@
 package com.gdax.models
 
+import java.sql.Timestamp
+
 
 /*
   {
@@ -37,4 +39,4 @@ case class GDaxProduct(id: String, base_currency: String, quote_currency: String
 case class Bid(price: Double, size: Double, numOrders: Long)
 case class Ask(price: Double, size: Double, numOrders: Long)
 case class Book(sequence: Long, bids: List[Bid], asks: List[Ask])
-
+case class Time(iso: Timestamp, epoch: Double)
