@@ -1,7 +1,7 @@
 package com.gdax.client
 
 import com.gdax.error._
-import com.gdax.models.{Book, GDaxProduct}
+import com.gdax.models.{Book, GDaxProduct, Time}
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 import scala.concurrent.Await
@@ -30,5 +30,11 @@ class PublicGDaxClientSuite extends FunSuite with BeforeAndAfter {
     val book: Either[ErrorCode, Book] = Await.result(client.book("BTC-USD"), 1.seconds)
     println(book)
     assert(book.isRight)
+  }
+
+  test("get /time should return the time"){
+    val time: Either[ErrorCode, Time] = Await.result(client.time(), 1.seconds)
+    println(time)
+    assert(time.isRight)
   }
 }
