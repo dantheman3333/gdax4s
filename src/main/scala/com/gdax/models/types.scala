@@ -1,5 +1,7 @@
 package com.gdax.models
 
+import java.sql.Timestamp
+
 
 /*
   {
@@ -42,3 +44,4 @@ case class FullBid(price: Double, size: Double, order_id : String)
 case class FullAsk(price: Double, size: Double, order_id : String)
 case class FullBook(sequence: Long, bids: List[FullBid], asks: List[FullAsk])
 
+case class Time(iso: Timestamp, epoch: Double)

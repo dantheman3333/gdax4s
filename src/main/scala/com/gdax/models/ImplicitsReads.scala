@@ -31,4 +31,18 @@ object ImplicitsReads {
       }.toList
       )
     ) (Book.apply _)
+
+  implicit val FullBookReads: Reads[FullBook] = (
+    (__ \ "sequence").read[Long] and
+      (__ \ "bids").read[JsArray].map[List[FullBid]](_.value.map { innerArrayJson =>
+        val innerArray = innerArrayJson.as[JsArray].value
+        FullBid(innerArray(0).as[String].toDouble, innerArray(1).as[String].toDouble, innerArray(2).as[String])
+      }.toList
+      ) and
+      (__ \ "asks").read[JsArray].map[List[FullAsk]](_.value.map { innerArrayJson =>
+        val innerArray = innerArrayJson.as[JsArray].value
+        FullAsk(innerArray(0).as[String].toDouble, innerArray(1).as[String].toDouble, innerArray(2).as[String])
+      }.toList
+      )
+    ) (FullBook.apply _)
 }

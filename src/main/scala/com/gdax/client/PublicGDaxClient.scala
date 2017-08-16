@@ -1,7 +1,7 @@
 package com.gdax.client
 
 import com.gdax.error._
-import com.gdax.models.{Book, GDaxProduct}
+import com.gdax.models.{Book, GDaxProduct, Time}
 import com.gdax.models.ImplicitsReads._
 import play.api.libs.json.{JsError, JsSuccess, Json}
 
@@ -33,6 +33,22 @@ class PublicGDaxClient(url: String) extends GDaxClient(url) {
         logger.debug(s"Sent URI: $uri. Received response: ${response.body}")
         Json.parse(response.body).validate[Book] match {
           case success: JsSuccess[Book] => Right(success.value)
+          case JsError(e) => Left(InvalidJson(e.toString()))
+        }
+      } else {
+        logger.debug(s"Sent URI: $uri. Response Error: ${response.status}.")
+        Left(RequestError(response.status))
+      }
+    })
+  }
+
+  def time(): Future[Either[ErrorCode, Time]] = {
+    val uri = url + "/time"
+    ws.url(uri).get().map(response => {
+      if (isValidResponse(response.status)) {
+        logger.debug(s"Sent URI: $uri. Received response: ${response.body}")
+        Json.parse(response.body).validate[Time] match {
+          case success: JsSuccess[Time] => Right(success.value)
           case JsError(e) => Left(InvalidJson(e.toString()))
         }
       } else {
