@@ -6,6 +6,7 @@ object ImplicitsReads {
   import play.api.libs.functional.syntax._
   import play.api.libs.json.Reads._
   import play.api.libs.json._
+  import java.time.Instant
 
   implicit val GDaxProductReads: Reads[GDaxProduct] = (
     (__ \ "id").read[String] and
@@ -45,4 +46,9 @@ object ImplicitsReads {
       }.toList
       )
     ) (FullBook.apply _)
+
+  implicit val TimeRead: Reads[Time] = (
+    (__ \ "iso").read[Instant] and
+      (__ \ "epoch").read[Double]
+    ) (Time.apply _)
 }

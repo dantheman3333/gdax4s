@@ -30,14 +30,10 @@ class PublicGDaxClient(url: String) extends GDaxClient(url) {
     publicRequest[FullBook](uri, ("level", "3"))
   }
 
-  //need implicit reader
-/*
   def time(): Future[Either[ErrorCode, Time]] = {
     val uri = url + "/time"
     publicRequest[Time](uri)
   }
-*/
-
   private def publicRequest[A: Reads](uri: String, parameters: (String, String)*): Future[Either[ErrorCode, A]] = {
     ws.url(uri).withQueryStringParameters(parameters: _*).get().map(response => {
       if (isValidResponse(response.status)) {
