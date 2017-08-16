@@ -2,14 +2,8 @@ package com.gdax.client
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import com.gdax.error._
-import com.gdax.models.ImplicitsReads._
-import com.gdax.models.ResponseType
 import org.slf4j.LoggerFactory
-import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.libs.ws.ahc._
-
-import scala.concurrent.Future
 
 abstract class GDaxClient(url: String) {
 

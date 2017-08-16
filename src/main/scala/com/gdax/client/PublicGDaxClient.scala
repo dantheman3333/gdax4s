@@ -11,7 +11,7 @@ import scala.concurrent.Future
 class PublicGDaxClient(url: String) extends GDaxClient(url) {
 
   def products(): Future[Either[ErrorCode, List[GDaxProduct]]] = {
-    val uri = url + "/products"
+    val uri = s"$url/products"
     publicRequest[List[GDaxProduct]](uri)
   }
 
