@@ -35,6 +35,11 @@ class PublicGDaxClient(url: String) extends GDaxClient(url) {
     publicRequest[Ticker](uri)
   }
 
+  def trades(productId: String, before: Option[Int] = None, after: Option[Int] = None, limit: Option[Int] = None): Future[Either[ErrorCode, List[Trades]]] = {
+    val uri = s"$url/products/$productId/trades"
+    val parameters = Seq(before.map(v => ("before", v.toString)), after.map(v => ("after", v.toString)), limit.map(v => ("limit", v.toString))).flatten
+    publicRequest[List[Trades]](uri, parameters: _*)
+  }
 
   def time(): Future[Either[ErrorCode, Time]] = {
     val uri = url + "/time"

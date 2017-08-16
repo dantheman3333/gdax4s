@@ -62,4 +62,12 @@ object ImplicitsReads {
       (__ \ "time").read[Instant]
     ) (Ticker.apply _)
 
+  //case class Trades(time: Instant, trade_id: Long, price: Double, size: Double, side: String)
+  implicit val TradesReads: Reads[Trades] = (
+    (__ \ "time").read[Instant] and
+      (__ \ "trade_id").read[Long] and
+      (__ \ "price").read[String].map[Double](_.toDouble) and
+      (__ \ "size").read[String].map[Double](_.toDouble) and
+      (__ \ "side").read[String]
+    ) (Trades.apply _)
 }
