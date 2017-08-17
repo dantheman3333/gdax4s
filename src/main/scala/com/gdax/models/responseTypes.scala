@@ -28,3 +28,8 @@ case class Currencies(id: String, name: String, min_size: Double)
 case class Candle(time: Instant, low: Double, high: Double, open: Double, close: Double, volume: Double)
 
 case class DailyStats(open: Double, high: Double, low: Double, volume: Double)
+
+case class OrderResponse(id: String, price: Double, size: Double, product_id: String, side: String,
+                         stp: String, `type`: String, time_in_force: String, post_only: Boolean,
+                         created_at: Instant, fill_fees: Double, filled_size: Double,
+                         executed_value: Double, status: String, settled: Boolean)
