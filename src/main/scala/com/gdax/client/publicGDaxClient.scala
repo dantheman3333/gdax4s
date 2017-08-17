@@ -65,6 +65,7 @@ class PublicGDaxClient(url: String) extends GDaxClient(url) {
     val uri = s"$url/products/$productId/stats"
     publicRequest[DailyStats](uri)
   }
+
   private def publicRequest[A: Reads](uri: String, parameters: (String, String)*): Future[Either[ErrorCode, A]] = {
     ws.url(uri).withQueryStringParameters(parameters: _*).get().map(response => {
       if (isValidResponse(response.status)) {
