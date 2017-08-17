@@ -71,9 +71,9 @@ object ImplicitsReads {
     ) (Trades.apply _)
 
   implicit val CurrenciesRead: Reads[Currencies] = (
-    (__ \ "min_price").read[Double] and
-      (__ \ "id").read[String] and
-      (__ \ "name").read[String]
+    (__ \ "id").read[String] and
+      (__ \ "name").read[String] and
+      (__ \ "min_size").read[String].map[Double](_.toDouble)
     ) (Currencies.apply _)
 
   implicit val candleReads: Reads[Candle] =

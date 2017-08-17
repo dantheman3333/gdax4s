@@ -76,7 +76,7 @@ class PublicGDaxClientSuite extends FunSuite with BeforeAndAfter {
   }
 //failing
   test("publicClient.currencies should return a valid currency"){
-    val currencies: Either[ErrorCode, Currencies] = Await.result(client.currencies(), 1.seconds)
+    val currencies: Either[ErrorCode, List[Currencies]] = Await.result(client.currencies(), 1.seconds)
     println(currencies)
     assert(currencies.isRight)
   }

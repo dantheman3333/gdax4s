@@ -70,9 +70,9 @@ class PublicGDaxClient(url: String) extends GDaxClient(url) {
     })
   }
 
-  def currencies(): Future[Either[ErrorCode, Currencies]] = {
+  def currencies(): Future[Either[ErrorCode, List[Currencies]]] = {
     val uri = s"$url/currencies"
-    publicRequest[Currencies](uri)
+    publicRequest[List[Currencies]](uri)
   }
 }
 
