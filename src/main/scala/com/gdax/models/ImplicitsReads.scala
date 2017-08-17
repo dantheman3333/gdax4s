@@ -62,7 +62,6 @@ object ImplicitsReads {
       (__ \ "time").read[Instant]
     ) (Ticker.apply _)
 
-  //case class Trades(time: Instant, trade_id: Long, price: Double, size: Double, side: String)
   implicit val TradesReads: Reads[Trades] = (
     (__ \ "time").read[Instant] and
       (__ \ "trade_id").read[Long] and
@@ -76,4 +75,9 @@ object ImplicitsReads {
       (__ \ "id").read[String] and
       (__ \ "name").read[String]
     ) (Currencies.apply _)
+
+  implicit val candleReads: Reads[Candle] =
+    __.read[JsArray].map[Candle]((array: JsArray) => Candle(Instant.ofEpochSecond(array(0).as[Long]),
+      array(1).as[Double], array(2).as[Double], array(3).as[Double],
+      array(4).as[Double], array(5).as[Double]))
 }

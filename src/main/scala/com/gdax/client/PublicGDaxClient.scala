@@ -1,5 +1,7 @@
 package com.gdax.client
 
+import java.time.Instant
+
 import com.gdax.error._
 import com.gdax.models._
 import com.gdax.models.ImplicitsReads._
@@ -39,6 +41,14 @@ class PublicGDaxClient(url: String) extends GDaxClient(url) {
     val uri = s"$url/products/$productId/trades"
     val parameters = Seq(before.map(v => ("before", v.toString)), after.map(v => ("after", v.toString)), limit.map(v => ("limit", v.toString))).flatten
     publicRequest[List[Trades]](uri, parameters: _*)
+  }
+
+  def candles(productId: String, start: Instant, end: Instant, granularity: Long): Future[Either[ErrorCode, List[Candle]]] = {
+    val uri = s"$url/products/$productId/candles"
+    val startParam = ("start", start.toString)
+    val endParam = ("end", end.toString)
+    val granularityParam = ("granularity", granularity.toString)
+    publicRequest[List[Candle]](uri, Seq(startParam, endParam, granularityParam): _*)
   }
 
   def time(): Future[Either[ErrorCode, Time]] = {

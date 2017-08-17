@@ -20,3 +20,5 @@ case class Ticker(trade_id: Long, price: Double, size: Double, bid: Double, ask:
 case class Trades(time: Instant, trade_id: Long, price: Double, size: Double, side: String)
 
 case class Currencies(min_size: Double, id: String, name: String)
+
+case class Candle(time: Instant, low: Double, high: Double, open: Double, close: Double, volume: Double)
