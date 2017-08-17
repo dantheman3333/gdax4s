@@ -80,4 +80,11 @@ object ImplicitsReads {
     __.read[JsArray].map[Candle]((array: JsArray) => Candle(Instant.ofEpochSecond(array(0).as[Long]),
       array(1).as[Double], array(2).as[Double], array(3).as[Double],
       array(4).as[Double], array(5).as[Double]))
+
+  implicit val DailyStatsReads: Reads[DailyStats] = (
+    (__ \ "open").read[String].map[Double](_.toDouble) and
+      (__ \ "high").read[String].map[Double](_.toDouble) and
+      (__ \ "low").read[String].map[Double](_.toDouble) and
+      (__ \ "volume").read[String].map[Double](_.toDouble)
+    ) (DailyStats.apply _)
 }

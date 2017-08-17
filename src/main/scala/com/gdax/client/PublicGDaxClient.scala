@@ -55,6 +55,16 @@ class PublicGDaxClient(url: String) extends GDaxClient(url) {
     val uri = url + "/time"
     publicRequest[Time](uri)
   }
+
+  def currencies(): Future[Either[ErrorCode, List[Currencies]]] = {
+    val uri = s"$url/currencies"
+    publicRequest[List[Currencies]](uri)
+  }
+
+  def dailyStats(productId: String): Future[Either[ErrorCode, DailyStats]] = {
+    val uri = s"$url/products/$productId/stats"
+    publicRequest[DailyStats](uri)
+  }
   private def publicRequest[A: Reads](uri: String, parameters: (String, String)*): Future[Either[ErrorCode, A]] = {
     ws.url(uri).withQueryStringParameters(parameters: _*).get().map(response => {
       if (isValidResponse(response.status)) {
@@ -68,11 +78,6 @@ class PublicGDaxClient(url: String) extends GDaxClient(url) {
         Left(RequestError(response.status))
       }
     })
-  }
-
-  def currencies(): Future[Either[ErrorCode, List[Currencies]]] = {
-    val uri = s"$url/currencies"
-    publicRequest[List[Currencies]](uri)
   }
 }
 

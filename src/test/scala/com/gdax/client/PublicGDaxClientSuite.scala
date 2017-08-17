@@ -74,7 +74,7 @@ class PublicGDaxClientSuite extends FunSuite with BeforeAndAfter {
     val after: Either[ErrorCode, List[Trades]] = Await.result(client.trades("BTC-USD", after = Some(3), limit = Some(1)), 1.seconds)
     assert(before.isRight && after.isRight)
   }
-//failing
+
   test("publicClient.currencies should return a valid currency"){
     val currencies: Either[ErrorCode, List[Currencies]] = Await.result(client.currencies(), 1.seconds)
     println(currencies)
@@ -87,5 +87,11 @@ class PublicGDaxClientSuite extends FunSuite with BeforeAndAfter {
     import com.gdax.models.ImplicitsReads._
     val expectedCandle = Json.parse(rawJson).as[List[Candle]]
     assert(expectedCandle == candles)
+  }
+
+  test("publicClient.stats should return daily stats for a valid product id"){
+    val stats: Either[ErrorCode, DailyStats] = Await.result(client.dailyStats("BTC-USD"), 1.seconds)
+    println(stats)
+    assert(stats.isRight)
   }
 }

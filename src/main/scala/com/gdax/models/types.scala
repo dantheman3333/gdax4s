@@ -22,3 +22,5 @@ case class Trades(time: Instant, trade_id: Long, price: Double, size: Double, si
 case class Currencies(id: String, name: String, min_size: Double)
 
 case class Candle(time: Instant, low: Double, high: Double, open: Double, close: Double, volume: Double)
+
+case class DailyStats(open: Double, high: Double, low: Double, volume: Double )
