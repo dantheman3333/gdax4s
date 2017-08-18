@@ -3,38 +3,23 @@ package com.gdax.client
 import java.time.Instant
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
-
 import com.gdax.models.ImplicitsReads._
 import com.gdax.error.ErrorCode
 import com.gdax.models._
+import com.gdax.models.OrderParams.CancelAfter.CancelAfter
+import com.gdax.models.OrderParams.{OrderType, TimeInForce}
+import com.gdax.models.OrderParams.OrderType.OrderType
+import com.gdax.models.OrderParams.Side.Side
+import com.gdax.models.OrderParams.TimeInForce.TimeInForce
+import com.gdax.models.{Accounts, Book, FullBook, Ticker}
 import play.api.libs.json.Reads
 import play.api.libs.ws.StandaloneWSRequest
 import play.shaded.ahc.org.asynchttpclient.util.Base64
-
 import scala.concurrent.ExecutionContext.Implicits.global
+
 import scala.concurrent.Future
 
 class AuthenticatedGDaxClient(url: String) extends PublicGDaxClient(url) {
-
-  def topBook(productId: String): Future[Either[ErrorCode, Book]] = {
-    val uri = s"$url/products/$productId/book"
-    authorizedRequest[Book](uri)
-  }
-
-  def top50Books(productId: String): Future[Either[ErrorCode, Book]] = {
-    val uri = s"$url/products/$productId/book"
-    authorizedRequest[Book](uri, ("level", "2"))
-  }
-
-  def fullBooks(productId: String): Future[Either[ErrorCode, FullBook]] = {
-    val uri = s"$url/products/$productId/book"
-    authorizedRequest[FullBook](uri, ("level", "3"))
-  }
-
-  def ticker(productId: String): Future[Either[ErrorCode, Ticker]] = {
-    val uri = s"$url/products/$productId/ticker"
-    authorizedRequest[Ticker](uri)
-  }
 
   def account(accountId: String): Future[Either[ErrorCode, Account]] = {
     val uri = s"$url/accounts/$accountId"
@@ -44,6 +29,24 @@ class AuthenticatedGDaxClient(url: String) extends PublicGDaxClient(url) {
   def accounts(): Future[Either[ErrorCode, List[Accounts]]] = {
     val uri = s"$url/accounts/"
     authorizedRequest[List[Accounts]](uri)
+  }
+
+  def limitOrder(productId: String, side: Side, price: Double, size: Double, timeInForce: Option[TimeInForce] = None,
+                 cancelAfter: Option[CancelAfter] = None,  stp: Option[Boolean] = None,
+                 postOnly: Option[Boolean] = None, clientId: Option[String] = None) = {
+
+    if(cancelAfter.isDefined && !timeInForce.contains(TimeInForce.GTT)) throw new Exception("cancel_after [optional]* min, hour, day * Requires time_in_force to be GTT")
+    if(postOnly.isDefined && (timeInForce.contains(TimeInForce.IOC) || timeInForce.contains(TimeInForce.FOK))) throw new Exception("post_only [optional]** Post only flag ** Invalid when time_in_force is IOC or FOK")
+
+    val orderType = OrderType.Limit
+  }
+
+  def marketOrder(orderType: OrderType, productId: String, side: Side, stp: Option[Boolean] = None, clientId: Option[String] = None, size: Option[Double] = None, funds: Option[Double] = None) = {
+    if(size.isEmpty && funds.isEmpty) throw new Exception("* One of size or funds is required.")
+  }
+
+  def order(orderType: OrderType, productId: String, side: Side, stp: Option[Boolean] = None, clientId: Option[String] = None) = {
+
   }
 
   private def authorizedRequest[A: Reads](uri: String, parameters: (String, String)*): Future[Either[ErrorCode, A]] = {

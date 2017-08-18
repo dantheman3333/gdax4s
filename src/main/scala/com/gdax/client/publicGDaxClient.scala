@@ -18,7 +18,25 @@ class PublicGDaxClient(url: String) extends GDaxClient(url) {
     publicRequest[List[GDaxProduct]](uri)
   }
 
+  def ticker(productId: String): Future[Either[ErrorCode, Ticker]] = {
+    val uri = s"$url/products/$productId/ticker"
+    publicRequest[Ticker](uri)
+  }
 
+  def topBook(productId: String): Future[Either[ErrorCode, Book]] = {
+    val uri = s"$url/products/$productId/book"
+    publicRequest[Book](uri)
+  }
+
+  def fullBooks(productId: String): Future[Either[ErrorCode, FullBook]] = {
+    val uri = s"$url/products/$productId/book"
+    publicRequest[FullBook](uri, ("level", "3"))
+  }
+
+  def top50Books(productId: String): Future[Either[ErrorCode, Book]] = {
+    val uri = s"$url/products/$productId/book"
+    publicRequest[Book](uri, ("level", "2"))
+  }
 
   def trades(productId: String, before: Option[Int] = None, after: Option[Int] = None, limit: Option[Int] = None): Future[Either[ErrorCode, List[Trades]]] = {
     val uri = s"$url/products/$productId/trades"
