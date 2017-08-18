@@ -33,3 +33,5 @@ case class OrderResponse(id: String, price: Double, size: Double, product_id: St
                          stp: String, `type`: String, time_in_force: String, post_only: Boolean,
                          created_at: Instant, fill_fees: Double, filled_size: Double,
                          executed_value: Double, status: String, settled: Boolean)
+
+case class Accounts(id: String, currency: String, balance: Double, available: Double, hold: Double, profile_id: String)

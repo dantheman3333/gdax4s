@@ -5,7 +5,7 @@ import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import com.gdax.models.ImplicitsReads._
 import com.gdax.error.ErrorCode
-import com.gdax.models.{Book, FullBook, Ticker}
+import com.gdax.models.{Book, FullBook, Ticker, Accounts}
 import play.api.libs.json.Reads
 import play.api.libs.ws.StandaloneWSRequest
 import play.shaded.ahc.org.asynchttpclient.util.Base64
@@ -33,6 +33,11 @@ class AuthenticatedGDaxClient(url: String) extends PublicGDaxClient(url) {
   def ticker(productId: String): Future[Either[ErrorCode, Ticker]] = {
     val uri = s"$url/products/$productId/ticker"
     authorizedRequest[Ticker](uri)
+  }
+
+  def accounts(): Future[Either[ErrorCode, List[Accounts]]] = {
+    val uri = s"$url/accounts"
+    authorizedRequest[List[Accounts]](uri)
   }
 
   private def authorizedRequest[A: Reads](uri: String, parameters: (String, String)*): Future[Either[ErrorCode, A]] = {
@@ -65,7 +70,6 @@ class AuthenticatedGDaxClient(url: String) extends PublicGDaxClient(url) {
 
     request.withHttpHeaders(headers: _*)
   }
-
 }
 
 object AuthenticatedGDaxClient {
