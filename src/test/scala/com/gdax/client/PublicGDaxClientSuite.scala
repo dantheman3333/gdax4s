@@ -16,7 +16,7 @@ class PublicGDaxClientSuite extends FunSuite with BeforeAndAfter {
 
   before {
     Thread.sleep(334) // to not spam the server
-    client = PublicGDaxClient(SandBoxUrl)
+    client = PublicGDaxClient(Url)
   }
 
   after {

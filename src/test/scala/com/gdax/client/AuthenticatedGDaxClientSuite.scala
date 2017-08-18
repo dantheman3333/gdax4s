@@ -16,7 +16,7 @@ class AuthenticatedGDaxClientSuite extends FunSuite with BeforeAndAfter {
   var client: AuthenticatedGDaxClient = _
 
   before {
-    client = AuthenticatedGDaxClient(SandBoxUrl)
+    client = AuthenticatedGDaxClient(SandboxUrl)
   }
 
   after {
