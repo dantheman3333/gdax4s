@@ -62,5 +62,11 @@ class AuthenticatedGDaxClientSuite extends FunSuite with BeforeAndAfter {
     println(accounts)
     assert(accounts.right.get.size > 0)
   }
+//missing account id
+  test("authenticatedClient.account should return correct account"){
+    val accounts: Either[ErrorCode, Account] = Await.result(client.account("accountid"), 1.seconds)
+    println(accounts)
+    assert(accounts.isRight)
+  }
 
 }
