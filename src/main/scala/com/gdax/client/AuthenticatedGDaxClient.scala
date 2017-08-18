@@ -3,14 +3,15 @@ package com.gdax.client
 import java.time.Instant
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
+
 import com.gdax.models.ImplicitsReads._
 import com.gdax.error.ErrorCode
-import com.gdax.models.{Book, FullBook, Ticker, Accounts}
+import com.gdax.models._
 import play.api.libs.json.Reads
 import play.api.libs.ws.StandaloneWSRequest
 import play.shaded.ahc.org.asynchttpclient.util.Base64
-import scala.concurrent.ExecutionContext.Implicits.global
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class AuthenticatedGDaxClient(url: String) extends PublicGDaxClient(url) {
@@ -35,8 +36,13 @@ class AuthenticatedGDaxClient(url: String) extends PublicGDaxClient(url) {
     authorizedRequest[Ticker](uri)
   }
 
+  def account(accountId: String): Future[Either[ErrorCode, Account]] = {
+    val uri = s"$url/accounts/$accountId"
+    authorizedRequest[Account](uri)
+  }
+
   def accounts(): Future[Either[ErrorCode, List[Accounts]]] = {
-    val uri = s"$url/accounts"
+    val uri = s"$url/accounts/"
     authorizedRequest[List[Accounts]](uri)
   }
 
