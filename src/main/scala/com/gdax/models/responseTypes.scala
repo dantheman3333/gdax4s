@@ -37,3 +37,21 @@ case class OrderResponse(id: String, price: Double, size: Double, product_id: St
 case class AccountWithProfile(id: String, currency: String, balance: Double, available: Double, hold: Double, profile_id: String)
 
 case class Account(id: String, balance: Double, hold: Double, available: Double, currency: String)
+
+case class CoinBaseDeposit(id: String, amount: Double, currency: String)
+
+case class PaymentMethodDeposit(id: String, amount: Double, currency: String, payout_at: Instant)
+
+case class LimitTotal(amount: Double, currency: String)
+case class LimitRemaining(amount: Double, currency: String)
+case class Limit(period_in_days: Long, total: LimitTotal, remaining: LimitRemaining)
+
+case class Limits(buy: Option[List[Limit]], instant_buy: Option[List[Limit]], sell: Option[List[Limit]], deposit: Option[List[Limit]])
+
+case class FiatAccount(id: String, resource: String)
+
+case class PaymentMethod(id: String, `type`: String, verified: Option[Boolean], verification_method: Option[String],
+                         cdv_status: Option[String], name: String, currency: String, primary_buy: Boolean,
+                         primary_sell: Boolean, allow_buy: Boolean, allow_sell: Boolean, allow_deposit: Boolean,
+                         allow_withdraw: Boolean, created_at: Instant, updated_at: Instant, resource: String,
+                         resource_path: String, limits: Limits, fiat_account: Option[FiatAccount])

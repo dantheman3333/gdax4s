@@ -2,11 +2,11 @@ package com.gdax.models
 
 object ImplicitsReads {
 
-  import com.gdax.models.GDaxProduct
+  import java.time.Instant
+
   import play.api.libs.functional.syntax._
   import play.api.libs.json.Reads._
   import play.api.libs.json._
-  import java.time.Instant
 
   implicit val GDaxProductReads: Reads[GDaxProduct] = (
     (__ \ "id").read[String] and
@@ -123,4 +123,66 @@ object ImplicitsReads {
       (__ \ "settled").read[Boolean]
     ) (OrderResponse.apply _)
 
+  implicit val CoinBaseDepositRead: Reads[CoinBaseDeposit] = (
+    (__ \ "id").read[String] and
+      (__ \ "amount").read[String].map[Double](_.toDouble) and
+      (__ \ "currency").read[String]
+    ) (CoinBaseDeposit.apply _)
+
+  implicit val PaymentMethodDepositRead: Reads[PaymentMethodDeposit] = (
+    (__ \ "id").read[String] and
+      (__ \ "amount").read[String].map[Double](_.toDouble) and
+      (__ \ "currency").read[String] and
+      (__ \ "payout_at").read[Instant]
+    ) (PaymentMethodDeposit.apply _)
+
+  implicit val LimitTotalRead: Reads[LimitTotal] = (
+    (__ \ "amount").read[String].map[Double](_.toDouble) and
+      (__ \ "currency").read[String]
+    ) (LimitTotal.apply _)
+
+  implicit val LimitRemainingRead: Reads[LimitRemaining] = (
+    (__ \ "amount").read[String].map[Double](_.toDouble) and
+      (__ \ "currency").read[String]
+    ) (LimitRemaining.apply _)
+
+  implicit val LimitRead: Reads[Limit] = (
+    (__ \ "period_in_days").read[Long] and
+      (__ \ "total").read[LimitTotal] and
+      (__ \ "remaining").read[LimitRemaining]
+    ) (Limit.apply _)
+
+  implicit val LimitsRead: Reads[Limits] = (
+    (__ \ "buy").readNullable[List[Limit]] and
+      (__ \ "instant_buy").readNullable[List[Limit]] and
+      (__ \ "sell").readNullable[List[Limit]] and
+      (__ \ "deposit").readNullable[List[Limit]]
+    ) (Limits.apply _)
+
+  implicit val FiatAccountRead: Reads[FiatAccount] = (
+    (__ \ "id").read[String] and
+      (__ \ "resource").read[String]
+    ) (FiatAccount.apply _)
+
+  implicit val PaymentMethodRead: Reads[PaymentMethod] = (
+    (__ \ "id").read[String] and
+      (__ \ "type").read[String] and
+      (__ \ "verified").readNullable[Boolean] and
+      (__ \ "verification_method").readNullable[String] and
+      (__ \ "cdv_status").readNullable[String] and
+      (__ \ "name").read[String] and
+      (__ \ "currency").read[String] and
+      (__ \ "primary_buy").read[Boolean] and
+      (__ \ "primary_sell").read[Boolean] and
+      (__ \ "allow_buy").read[Boolean] and
+      (__ \ "allow_sell").read[Boolean] and
+      (__ \ "allow_deposit").read[Boolean] and
+      (__ \ "allow_withdraw").read[Boolean] and
+      (__ \ "created_at").read[Instant] and
+      (__ \ "updated_at").read[Instant] and
+      (__ \ "resource").read[String] and
+      (__ \ "resource_path").read[String] and
+      (__ \ "limits").read[Limits] and
+      (__ \ "fiat_account").readNullable[FiatAccount]
+    ) (PaymentMethod.apply _)
 }

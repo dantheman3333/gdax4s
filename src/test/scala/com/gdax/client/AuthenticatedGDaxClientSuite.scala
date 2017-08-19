@@ -24,17 +24,30 @@ class AuthenticatedGDaxClientSuite extends FunSuite with BeforeAndAfter {
   }
 
 
-  test("authenticatedClient.accounts should return correct account"){
+  test("authenticatedClient.accounts should return correct accounts"){
     val accounts: Either[ErrorCode, List[Account]] = Await.result(client.accounts(), 1.seconds)
     println(accounts)
     assert(accounts.right.get.size > 0)
   }
-//missing account id
+
   test("authenticatedClient.account should return correct account"){
     val accounts: List[Account] = Await.result(client.accounts(), 1.seconds).right.get
     val account: Either[ErrorCode, AccountWithProfile] = Await.result(client.account(accounts.head.id), 1.seconds)
     println(accounts)
     assert(account.isRight)
+  }
+
+  test("authenticatedClient.PaymentMethod should return correct Payment Methods"){
+    val paymentMethods: Either[ErrorCode, List[PaymentMethod]] = Await.result(client.paymentMethods(), 1.seconds)
+    println(paymentMethods)
+    assert(paymentMethods.isRight)
+  }
+
+  test("authenticatedClient.depositPaymentMethod should deposit"){
+    val paymentMethod: PaymentMethod = Await.result(client.paymentMethods(), 1.seconds).right.get.filter(_.currency == "USD").head
+    val deposit: Either[ErrorCode, PaymentMethodDeposit] = Await.result(client.depositPaymentMethod(10.00, "USD", paymentMethod.id), 1.seconds)
+    println(deposit)
+    assert(deposit.isRight)
   }
 
 }

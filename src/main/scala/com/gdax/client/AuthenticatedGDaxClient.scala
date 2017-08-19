@@ -13,10 +13,12 @@ import com.gdax.models.OrderParams.OrderType.OrderType
 import com.gdax.models.OrderParams.Side.Side
 import com.gdax.models.OrderParams.TimeInForce.TimeInForce
 import com.gdax.models.{AccountWithProfile, Book, FullBook, Ticker}
-import play.api.libs.json.Reads
+import play.api.libs.json.Json.JsValueWrapper
+import play.api.libs.json.{JsObject, JsValue, Json, Reads}
 import play.api.libs.ws.{EmptyBody, StandaloneWSRequest}
 import play.shaded.ahc.org.asynchttpclient.util.Base64
-
+import play.api.libs.ws.JsonBodyReadables._
+import play.api.libs.ws.JsonBodyWritables._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -24,14 +26,27 @@ class AuthenticatedGDaxClient(url: String) extends PublicGDaxClient(url) {
 
   def account(accountId: String): Future[Either[ErrorCode, AccountWithProfile]] = {
     val uri = s"$url/accounts/$accountId"
-    authorizedRequest[AccountWithProfile](uri)
+    authorizedGet[AccountWithProfile](uri)
   }
 
   def accounts(): Future[Either[ErrorCode, List[Account]]] = {
     val uri = s"$url/accounts"
-    authorizedRequest[List[Account]](uri)
+    authorizedGet[List[Account]](uri)
   }
 
+  def paymentMethods(): Future[Either[ErrorCode, List[PaymentMethod]]] = {
+    val uri = s"$url/payment-methods"
+    authorizedGet[List[PaymentMethod]](uri)
+  }
+
+  def depositPaymentMethod(amount: Double, currency: String, paymentMethodId: String): Future[Either[ErrorCode, PaymentMethodDeposit]] = {
+    val uri = s"$url/deposits/payment-method"
+    val params = Seq(("amount", amount.toString), ("currency", currency.toString), ("payment_method_id", paymentMethodId))
+    authorizedPost[PaymentMethodDeposit](uri, params:_*)
+  }
+
+  /*
+  TODO
   def limitOrder(productId: String, side: Side, price: Double, size: Double, timeInForce: Option[TimeInForce] = None,
                  cancelAfter: Option[CancelAfter] = None,  stp: Option[Boolean] = None,
                  postOnly: Option[Boolean] = None, clientId: Option[String] = None) = {
@@ -49,29 +64,34 @@ class AuthenticatedGDaxClient(url: String) extends PublicGDaxClient(url) {
   def order(orderType: OrderType, productId: String, side: Side, stp: Option[Boolean] = None, clientId: Option[String] = None) = {
 
   }
+*/
+  private def authorizedPost[A: Reads](uri: String, parameters: (String, String)*): Future[Either[ErrorCode, A]] = {
+    logger.debug(s"Sent URI: $uri")
+    val body = Json.obj(parameters.map(t => (t._1, Json.toJsFieldJsValueWrapper(t._2))):_*)
+    val jsonString = body.toString()
+    val requestWithHeaders = addAuthorizationHeaders(ws.url(uri).withBody(jsonString), bodyAsString = jsonString)
+    requestWithHeaders.post(jsonString).map(parseResponse[A](_))
+  }
 
-  private def authorizedRequest[A: Reads](uri: String, parameters: (String, String)*): Future[Either[ErrorCode, A]] = {
+  private def authorizedGet[A: Reads](uri: String, parameters: (String, String)*): Future[Either[ErrorCode, A]] = {
     logger.debug(s"Sent URI: $uri")
     val requestWithHeaders = addAuthorizationHeaders(ws.url(uri).withQueryStringParameters(parameters: _*))
     requestWithHeaders.get().map(parseResponse[A](_))
   }
 
-  private def addAuthorizationHeaders(request: StandaloneWSRequest): StandaloneWSRequest = {
+  private def addAuthorizationHeaders(request: StandaloneWSRequest, bodyAsString: String = ""): StandaloneWSRequest = {
     val apiKey: String = System.getProperty("apiKey")
     val secretKey: String = System.getProperty("secretKey")
     val passphrase: String = System.getProperty("passphrase")
-    addAuthorizationHeaders(apiKey, secretKey, passphrase, request)
+    addAuthorizationHeaders(apiKey, secretKey, passphrase, request, bodyAsString.replace("\"", "'"))
   }
 
-  private def addAuthorizationHeaders(apiKey: String, secretKey: String, passphrase: String, request: StandaloneWSRequest): StandaloneWSRequest = {
+  private def addAuthorizationHeaders(apiKey: String, secretKey: String, passphrase: String, request: StandaloneWSRequest, bodyAsString: String): StandaloneWSRequest = {
     val CryptoFunction = "HmacSHA256"
     val timestamp: Long = Instant.now().getEpochSecond
-    val body = request.body match{
-      case EmptyBody => ""
-      case body => body.toString
-    }
+
     val path = request.uri.getPath
-    val message: String = timestamp + request.method.toUpperCase + path + body
+    val message: String = timestamp + request.method.toUpperCase + path + bodyAsString
     val hmacKey: Array[Byte] = Base64.decode(secretKey)
     val secretKeySpec = new SecretKeySpec(hmacKey, CryptoFunction)
     val mac: Mac = Mac.getInstance(CryptoFunction)
