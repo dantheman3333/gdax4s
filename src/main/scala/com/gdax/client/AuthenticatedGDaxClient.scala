@@ -4,22 +4,13 @@ import java.time.Instant
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
-import com.gdax.models.ImplicitsReads._
 import com.gdax.error.ErrorCode
-import com.gdax.models._
-import com.gdax.models.OrderParams.CancelAfter.CancelAfter
-import com.gdax.models.OrderParams.{OrderType, TimeInForce}
-import com.gdax.models.OrderParams.OrderType.OrderType
-import com.gdax.models.OrderParams.Side.Side
-import com.gdax.models.OrderParams.TimeInForce.TimeInForce
-import com.gdax.models.{AccountWithProfile, Book, FullBook, Ticker}
-import play.api.libs.json.Json.JsValueWrapper
-import play.api.libs.json.{JsObject, JsValue, Json, Reads}
+import com.gdax.models.ImplicitsReads._
+import com.gdax.models.{AccountWithProfile, _}
+import play.api.libs.json.{Json, Reads}
 import play.api.libs.ws.{EmptyBody, InMemoryBody, StandaloneWSRequest}
 import play.shaded.ahc.org.asynchttpclient.util.Base64
-import com.gdax.models.ImplicitWrites._
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class AuthenticatedGDaxClient(url: String) extends PublicGDaxClient(url) {
@@ -45,11 +36,9 @@ class AuthenticatedGDaxClient(url: String) extends PublicGDaxClient(url) {
   }
 
   def depositFromPaymentMethod(amount: Double, currency: String, paymentMethodId: String): Future[Either[ErrorCode, PaymentMethodDeposit]] = {
-    import play.api.libs.ws.JsonBodyWritables._
     val uri = s"$url/deposits/payment-method"
-    val postParam: JsValue = Json.toJson(DepositFromPaymentMethodPost(amount, currency, paymentMethodId))
-    val requestWithHeaders = addAuthorizationHeaders(ws.url(uri).withBody(postParam))
-    requestWithHeaders.post(postParam).map(parseResponse[PaymentMethodDeposit](_))
+    val params = Seq(("amount", amount.toString), ("currency", currency.toString), ("payment_method_id", paymentMethodId))
+    authorizedPost[PaymentMethodDeposit](uri, params:_*)
   }
 
   def depositFromCoinbaseAccount(amount: Double, currency: String, coinbaseAccountId: String): Future[Either[ErrorCode, CoinBaseDeposit]]  = {
@@ -82,8 +71,7 @@ class AuthenticatedGDaxClient(url: String) extends PublicGDaxClient(url) {
     import play.api.libs.ws.JsonBodyWritables._
     logger.debug(s"Sent URI: $uri")
     val requestBody = Json.obj(parameters.map(t => (t._1, Json.toJsFieldJsValueWrapper(t._2))):_*)
-    val jsonString = requestBody.toString()
-    val requestWithHeaders = addAuthorizationHeaders(ws.url(uri).withBody(requestBody))
+    val requestWithHeaders = addAuthorizationHeaders(ws.url(uri).withBody(requestBody).withMethod("POST"))
     requestWithHeaders.post(requestBody).map(parseResponse[A](_))
   }
 
