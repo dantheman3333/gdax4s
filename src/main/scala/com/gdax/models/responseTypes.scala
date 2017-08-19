@@ -34,6 +34,6 @@ case class OrderResponse(id: String, price: Double, size: Double, product_id: St
                          created_at: Instant, fill_fees: Double, filled_size: Double,
                          executed_value: Double, status: String, settled: Boolean)
 
-case class Accounts(id: String, currency: String, balance: Double, available: Double, holds: Double, profile_id: String)
+case class AccountWithProfile(id: String, currency: String, balance: Double, available: Double, hold: Double, profile_id: String)
 
-case class Account(id: String, balance: Double, holds: Double, available: Double, currency: String)
+case class Account(id: String, balance: Double, hold: Double, available: Double, currency: String)

@@ -88,19 +88,19 @@ object ImplicitsReads {
       (__ \ "volume").read[String].map[Double](_.toDouble)
     ) (DailyStats.apply _)
 
-  implicit val AccountsReads: Reads[Accounts] = (
+  implicit val AccountsReads: Reads[AccountWithProfile] = (
     (__ \ "id").read[String] and
       (__ \ "currency").read[String] and
       (__ \ "balance").read[String].map[Double](_.toDouble) and
       (__ \ "available").read[String].map[Double](_.toDouble) and
       (__ \ "hold").read[String].map[Double](_.toDouble) and
       (__ \ "profile_id").read[String]
-    ) (Accounts.apply _)
+    ) (AccountWithProfile.apply _)
 
   implicit val OneAccountRead: Reads[Account] = (
     (__ \ "id").read[String] and
       (__ \ "balance").read[String].map[Double](_.toDouble) and
-      (__ \ "holds").read[String].map[Double](_.toDouble) and
+      (__ \ "hold").read[String].map[Double](_.toDouble) and
       (__ \ "available").read[String].map[Double](_.toDouble) and
       (__ \ "currency").read[String]
     ) (Account.apply _)

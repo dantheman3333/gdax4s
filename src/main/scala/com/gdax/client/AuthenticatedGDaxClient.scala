@@ -3,6 +3,7 @@ package com.gdax.client
 import java.time.Instant
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
+
 import com.gdax.models.ImplicitsReads._
 import com.gdax.error.ErrorCode
 import com.gdax.models._
@@ -11,24 +12,24 @@ import com.gdax.models.OrderParams.{OrderType, TimeInForce}
 import com.gdax.models.OrderParams.OrderType.OrderType
 import com.gdax.models.OrderParams.Side.Side
 import com.gdax.models.OrderParams.TimeInForce.TimeInForce
-import com.gdax.models.{Accounts, Book, FullBook, Ticker}
+import com.gdax.models.{AccountWithProfile, Book, FullBook, Ticker}
 import play.api.libs.json.Reads
-import play.api.libs.ws.StandaloneWSRequest
+import play.api.libs.ws.{EmptyBody, StandaloneWSRequest}
 import play.shaded.ahc.org.asynchttpclient.util.Base64
-import scala.concurrent.ExecutionContext.Implicits.global
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class AuthenticatedGDaxClient(url: String) extends PublicGDaxClient(url) {
 
-  def account(accountId: String): Future[Either[ErrorCode, Account]] = {
+  def account(accountId: String): Future[Either[ErrorCode, AccountWithProfile]] = {
     val uri = s"$url/accounts/$accountId"
-    authorizedRequest[Account](uri)
+    authorizedRequest[AccountWithProfile](uri)
   }
 
-  def accounts(): Future[Either[ErrorCode, List[Accounts]]] = {
-    val uri = s"$url/accounts/"
-    authorizedRequest[List[Accounts]](uri)
+  def accounts(): Future[Either[ErrorCode, List[Account]]] = {
+    val uri = s"$url/accounts"
+    authorizedRequest[List[Account]](uri)
   }
 
   def limitOrder(productId: String, side: Side, price: Double, size: Double, timeInForce: Option[TimeInForce] = None,
@@ -65,7 +66,12 @@ class AuthenticatedGDaxClient(url: String) extends PublicGDaxClient(url) {
   private def addAuthorizationHeaders(apiKey: String, secretKey: String, passphrase: String, request: StandaloneWSRequest): StandaloneWSRequest = {
     val CryptoFunction = "HmacSHA256"
     val timestamp: Long = Instant.now().getEpochSecond
-    val message: String = timestamp + request.method.toUpperCase + request.url + request.body.toString
+    val body = request.body match{
+      case EmptyBody => ""
+      case body => body.toString
+    }
+    val path = request.uri.getPath
+    val message: String = timestamp + request.method.toUpperCase + path + body
     val hmacKey: Array[Byte] = Base64.decode(secretKey)
     val secretKeySpec = new SecretKeySpec(hmacKey, CryptoFunction)
     val mac: Mac = Mac.getInstance(CryptoFunction)
@@ -75,7 +81,8 @@ class AuthenticatedGDaxClient(url: String) extends PublicGDaxClient(url) {
     val headers = Seq(("CB-ACCESS-SIGN", signature),
       ("CB-ACCESS-TIMESTAMP", timestamp.toString),
       ("CB-ACCESS-KEY", apiKey),
-      ("CB-ACCESS-PASSPHRASE", passphrase))
+      ("CB-ACCESS-PASSPHRASE", passphrase),
+      ("Content-Type", "application/json"))
 
     request.withHttpHeaders(headers: _*)
   }

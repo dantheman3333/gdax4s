@@ -3,12 +3,10 @@ package com.gdax.client
 import java.time.Instant
 
 import com.gdax.error._
-import com.gdax.models._
 import com.gdax.models.ImplicitsReads._
-import play.api.libs.json.{JsError, JsSuccess, Json, Reads}
-import play.api.libs.ws.{StandaloneWSRequest, StandaloneWSResponse}
+import com.gdax.models._
+import play.api.libs.json.Reads
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class PublicGDaxClient(url: String) extends GDaxClient(url) {
@@ -68,6 +66,7 @@ class PublicGDaxClient(url: String) extends GDaxClient(url) {
   }
 
   private def publicRequest[A: Reads](uri: String, parameters: (String, String)*): Future[Either[ErrorCode, A]] = {
+    import scala.concurrent.ExecutionContext.Implicits.global
     logger.debug(s"Sent URI: $uri")
     ws.url(uri).withQueryStringParameters(parameters: _*).get().map(parseResponse[A](_))
   }
