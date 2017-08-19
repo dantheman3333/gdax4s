@@ -185,4 +185,43 @@ object ImplicitsReads {
       (__ \ "limits").read[Limits] and
       (__ \ "fiat_account").readNullable[FiatAccount]
     ) (PaymentMethod.apply _)
+
+
+  implicit val BankCountryRead: Reads[BankCountry] = (
+    (__ \ "code").read[String] and
+      (__ \ "name").read[String]
+    ) (BankCountry.apply _)
+
+  implicit val WireDepositInformationRead: Reads[WireDepositInformation] = (
+    (__ \ "account_number").read[String] and
+      (__ \ "routing_number").read[String] and
+      (__ \ "bank_name").read[String] and
+      (__ \ "bank_address").read[String] and
+      (__ \ "bank_country").read[BankCountry] and
+      (__ \ "account_name").read[String] and
+      (__ \ "account_address").read[String] and
+      (__ \ "reference").read[String]
+    ) (WireDepositInformation.apply _)
+
+  implicit val SepaDepositInformationRead: Reads[SepaDepositInformation] = (
+    (__ \ "iban").read[String] and
+      (__ \ "swift").read[String] and
+      (__ \ "bank_name").read[String] and
+      (__ \ "bank_address").read[String] and
+      (__ \ "account_name").read[String] and
+      (__ \ "account_address").read[String] and
+      (__ \ "reference").read[String]
+    ) (SepaDepositInformation.apply _)
+
+  implicit val CoinBaseAccountRead: Reads[CoinBaseAccount] = (
+    (__ \ "id").read[String] and
+      (__ \ "name").read[String] and
+      (__ \ "balance").read[String].map[Double](_.toDouble) and
+      (__ \ "currency").read[String] and
+      (__ \ "primary").read[Boolean] and
+      (__ \ "active").read[Boolean] and
+      (__ \ "wire_deposit_information").readNullable[WireDepositInformation] and
+        (__ \ "sepa_deposit_information").readNullable[SepaDepositInformation]
+    ) (CoinBaseAccount.apply _)
+
 }

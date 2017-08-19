@@ -39,6 +39,11 @@ class AuthenticatedGDaxClient(url: String) extends PublicGDaxClient(url) {
     authorizedGet[List[PaymentMethod]](uri)
   }
 
+  def coinbaseAccounts(): Future[Either[ErrorCode, List[CoinBaseAccount]]] = {
+    val uri = s"$url/coinbase-accounts"
+    authorizedGet[List[CoinBaseAccount]](uri)
+  }
+
   def depositPaymentMethod(amount: Double, currency: String, paymentMethodId: String): Future[Either[ErrorCode, PaymentMethodDeposit]] = {
     val uri = s"$url/deposits/payment-method"
     val params = Seq(("amount", amount.toString), ("currency", currency.toString), ("payment_method_id", paymentMethodId))

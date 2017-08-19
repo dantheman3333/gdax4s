@@ -55,3 +55,81 @@ case class PaymentMethod(id: String, `type`: String, verified: Option[Boolean], 
                          primary_sell: Boolean, allow_buy: Boolean, allow_sell: Boolean, allow_deposit: Boolean,
                          allow_withdraw: Boolean, created_at: Instant, updated_at: Instant, resource: String,
                          resource_path: String, limits: Limits, fiat_account: Option[FiatAccount])
+
+
+case class BankCountry(code: String, name: String)
+
+case class WireDepositInformation(account_number: String, routing_number: String, bank_name: String,
+                                  bank_address: String, bank_country: BankCountry, account_name: String,
+                                  account_address: String, reference: String)
+
+case class SepaDepositInformation(iban: String, swift: String, bank_name: String, bank_address: String,
+                                  account_name: String, account_address: String, reference: String)
+
+case class CoinBaseAccount(id: String, name: String, balance: Double, currency: String, primary: Boolean,
+                           active: Boolean, wire_deposit_information: Option[WireDepositInformation],
+                           sepa_deposit_information: Option[SepaDepositInformation])
+
+/*
+[
+    {
+        "id": "fc3a8a57-7142-542d-8436-95a3d82e1622",
+        "name": "ETH Wallet",
+        "balance": "0.00000000",
+        "currency": "ETH",
+        "type": "wallet",
+        "primary": false,
+        "active": true
+    },
+    {
+        "id": "2ae3354e-f1c3-5771-8a37-6228e9d239db",
+        "name": "USD Wallet",
+        "balance": "0.00",
+        "currency": "USD",
+        "type": "fiat",
+        "primary": false,
+        "active": true,
+        "wire_deposit_information": {
+            "account_number": "0199003122",
+            "routing_number": "026013356",
+            "bank_name": "Metropolitan Commercial Bank",
+            "bank_address": "99 Park Ave 4th Fl New York, NY 10016",
+            "bank_country": {
+                "code": "US",
+                "name": "United States"
+            },
+            "account_name": "Coinbase, Inc",
+            "account_address": "548 Market Street, #23008, San Francisco, CA 94104",
+            "reference": "BAOCAEUX"
+        }
+    },
+    {
+        "id": "1bfad868-5223-5d3c-8a22-b5ed371e55cb",
+        "name": "BTC Wallet",
+        "balance": "0.00000000",
+        "currency": "BTC",
+        "type": "wallet",
+        "primary": true,
+        "active": true
+    },
+    {
+        "id": "2a11354e-f133-5771-8a37-622be9b239db",
+        "name": "EUR Wallet",
+        "balance": "0.00",
+        "currency": "EUR",
+        "type": "fiat",
+        "primary": false,
+        "active": true,
+        "sepa_deposit_information": {
+            "iban": "EE957700771001355096",
+            "swift": "LHVBEE22",
+            "bank_name": "AS LHV Pank",
+            "bank_address": "Tartu mnt 2, 10145 Tallinn, Estonia",
+            "bank_country_name": "Estonia",
+            "account_name": "Coinbase UK, Ltd.",
+            "account_address": "9th Floor, 107 Cheapside, London, EC2V 6DN, United Kingdom",
+            "reference": "CBAEUXOVFXOXYX"
+        }
+    },
+]
+ */
