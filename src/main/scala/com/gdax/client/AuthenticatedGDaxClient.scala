@@ -54,7 +54,7 @@ class AuthenticatedGDaxClient(url: String) extends PublicGDaxClient(url) {
 
   def limitOrder(productId: String, side: Side, price: Double, size: Double, timeInForce: Option[TimeInForce] = None,
                  cancelAfter: Option[CancelAfter] = None, stp: Option[Boolean] = None,
-                 postOnly: Option[Boolean] = None, clientId: Option[String] = None) = {
+                 postOnly: Option[Boolean] = None, clientId: Option[String] = None): Future[Either[ErrorCode, LimitOrderResponse]] = {
 
     if (cancelAfter.isDefined && !timeInForce.contains(TimeInForce.GTT)) throw new Exception("cancel_after [optional]* min, hour, day * Requires time_in_force to be GTT")
     if (postOnly.isDefined && (timeInForce.contains(TimeInForce.IOC) || timeInForce.contains(TimeInForce.FOK))) throw new Exception("post_only [optional]** Post only flag ** Invalid when time_in_force is IOC or FOK")
@@ -69,7 +69,7 @@ class AuthenticatedGDaxClient(url: String) extends PublicGDaxClient(url) {
     authorizedPost[LimitOrderResponse](uri, params: _*)
   }
 
-  def marketOrder(productId: String, side: Side, stp: Option[Boolean] = None, clientId: Option[String] = None, size: Option[Double] = None, funds: Option[Double] = None) = {
+  def marketOrder(productId: String, side: Side, stp: Option[Boolean] = None, clientId: Option[String] = None, size: Option[Double] = None, funds: Option[Double] = None): Future[Either[ErrorCode, MarketAndStopOrderResponse]] = {
     if (size.isEmpty && funds.isEmpty) throw new Exception("* One of size or funds is required.")
 
     val uri = s"$url/orders"
@@ -81,7 +81,7 @@ class AuthenticatedGDaxClient(url: String) extends PublicGDaxClient(url) {
     authorizedPost[MarketAndStopOrderResponse](uri, params: _*)
   }
 
-  def stopOrder(productId: String, side: Side, price: Double, stp: Option[Boolean] = None, clientId: Option[String] = None, size: Option[Double] = None, funds: Option[Double] = None) = {
+  def stopOrder(productId: String, side: Side, price: Double, stp: Option[Boolean] = None, clientId: Option[String] = None, size: Option[Double] = None, funds: Option[Double] = None): Future[Either[ErrorCode, MarketAndStopOrderResponse]] = {
     if (size.isEmpty && funds.isEmpty) throw new Exception("* One of size or funds is required.")
 
     val uri = s"$url/orders"
@@ -93,12 +93,12 @@ class AuthenticatedGDaxClient(url: String) extends PublicGDaxClient(url) {
     authorizedPost[MarketAndStopOrderResponse](uri, params: _*)
   }
 
-  def cancelOrder(orderId: String) = {
+  def cancelOrder(orderId: String): Future[Either[ErrorCode, CanceledOrders]] = {
     val uri = s"$url/orders/$orderId"
     authorizedDelete[CanceledOrders](uri)
   }
 
-  def cancelAllOrders(productId: Option[String] = None) = {
+  def cancelAllOrders(productId: Option[String] = None): Future[Either[ErrorCode, CanceledOrders]] = {
     val uri = s"$url/orders"
     val params = Seq(productId.map("product_id" -> _)).flatten
     authorizedDelete[CanceledOrders](uri, params:_*)
