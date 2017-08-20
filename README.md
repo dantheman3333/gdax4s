@@ -63,4 +63,7 @@ def marketOrder(productId: String, side: Side, stp: Option[Boolean] = None,
 def stopOrder(productId: String, side: Side, price: Double, stp: Option[Boolean] = None, 
               clientId: Option[String] = None, size: Option[Double] = None, funds: Option[Double] = None)
               
+def cancelOrder(orderId: String)
+
+def cancelAllOrders(productId: Option[String] = None)
 ```
