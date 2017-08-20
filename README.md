@@ -55,15 +55,15 @@ def depositFromCoinbaseAccount(amount: Double, currency: String, coinbaseAccount
 
 def limitOrder(productId: String, side: Side, price: Double, size: Double, timeInForce: Option[TimeInForce] = None,
                cancelAfter: Option[CancelAfter] = None, stp: Option[Boolean] = None,
-               postOnly: Option[Boolean] = None, clientId: Option[String] = None)
+               postOnly: Option[Boolean] = None, clientId: Option[String] = None): Future[Either[ErrorCode, LimitOrderResponse]]
                
 def marketOrder(productId: String, side: Side, stp: Option[Boolean] = None, 
-                clientId: Option[String] = None, size: Option[Double] = None, funds: Option[Double] = None)
+                clientId: Option[String] = None, size: Option[Double] = None, funds: Option[Double] = None): Future[Either[ErrorCode, MarketAndStopOrderResponse]]
                 
 def stopOrder(productId: String, side: Side, price: Double, stp: Option[Boolean] = None, 
-              clientId: Option[String] = None, size: Option[Double] = None, funds: Option[Double] = None)
+              clientId: Option[String] = None, size: Option[Double] = None, funds: Option[Double] = None): Future[Either[ErrorCode, MarketAndStopOrderResponse]]
               
-def cancelOrder(orderId: String)
+def cancelOrder(orderId: String): Future[Either[ErrorCode, CanceledOrders]]
 
-def cancelAllOrders(productId: Option[String] = None)
+def cancelAllOrders(productId: Option[String] = None): Future[Either[ErrorCode, CanceledOrders]]
 ```
