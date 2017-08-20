@@ -88,4 +88,9 @@ class AuthenticatedGDaxClientSuite extends FunSuite with BeforeAndAfter {
     assert(orderResponseFunds.isRight)
   }
 
+  test("authenticatedClient.AccountHistory should return correct Payment Methods") {
+    val accountHistory: Either[ErrorCode, List[AccountHistory]] = Await.result(client.AccountHistory("account-id"), 5.seconds)
+    println(accountHistory)
+    assert(accountHistory.isRight)
+  }
 }
