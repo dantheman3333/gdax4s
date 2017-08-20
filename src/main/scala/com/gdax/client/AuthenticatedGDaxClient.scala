@@ -93,6 +93,11 @@ class AuthenticatedGDaxClient(url: String) extends PublicGDaxClient(url) {
     authorizedPost[MarketAndStopOrderResponse](uri, params: _*)
   }
 
+  def AccountHistory(account_id: String): Future[Either[ErrorCode, AccountHistory]] = {
+    val uri = s"$url/$account_id/ledger"
+    authorizedGet[AccountHistory](uri)
+  }
+
   private def baseOrderParams(orderType: OrderType, productId: String, side: Side, stp: Option[Boolean] = None, clientId: Option[String] = None): Seq[Option[(String, String)]] = {
     Seq(clientId.map("client_id" -> _), Some("type" -> orderType.toString), Some("side" -> side.toString), Some("product_id" -> productId), stp.map("stp" -> _.toString))
   }

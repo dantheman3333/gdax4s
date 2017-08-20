@@ -75,6 +75,10 @@ case class CoinBaseAccount(id: String, name: String, balance: Double, currency: 
                            active: Boolean, wire_deposit_information: Option[WireDepositInformation],
                            sepa_deposit_information: Option[SepaDepositInformation])
 
+case class Details(order_id: String, trade_id: String, product_id: String)
+
+case class AccountHistory(id: String, created_at: Instant, amount: Double, balance: Double, `type`: String,
+                          details: Option[Details])
 /*
 [
     {
