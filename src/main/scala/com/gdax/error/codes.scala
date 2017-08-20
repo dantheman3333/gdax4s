@@ -1,7 +1,7 @@
 package com.gdax.error
 
 sealed trait ErrorCode
-case class RequestError(statusCode: Int) extends ErrorCode
+case class RequestError(statusCode: Int, message: String = "") extends ErrorCode
 case class InvalidJson(jsonError: String, reason: Option[Throwable] = None) extends ErrorCode
 
 /*
