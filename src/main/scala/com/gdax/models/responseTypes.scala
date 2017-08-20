@@ -11,8 +11,6 @@ case class Ask(price: Double, size: Double, numOrders: Long)
 
 case class Book(sequence: Long, bids: List[Bid], asks: List[Ask])
 
-case class Details(order_id: String, trade_id: String, product_id: String)
-
 case class FullBid(price: Double, size: Double, order_id: String)
 
 case class FullAsk(price: Double, size: Double, order_id: String)
@@ -76,6 +74,8 @@ case class SepaDepositInformation(iban: String, swift: String, bank_name: String
 case class CoinBaseAccount(id: String, name: String, balance: Double, currency: String, primary: Boolean,
                            active: Boolean, wire_deposit_information: Option[WireDepositInformation],
                            sepa_deposit_information: Option[SepaDepositInformation])
+
+case class Details(order_id: String, trade_id: String, product_id: String)
 
 case class AccountHistory(id: String, created_at: Instant, amount: Double, balance: Double, `type`: String,
                           details: Option[Details])

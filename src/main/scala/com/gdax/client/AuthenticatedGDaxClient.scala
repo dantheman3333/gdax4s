@@ -93,9 +93,20 @@ class AuthenticatedGDaxClient(url: String) extends PublicGDaxClient(url) {
     authorizedPost[MarketAndStopOrderResponse](uri, params: _*)
   }
 
-  //def AccountHistory(account_id: String): Future[Either[ErrorCode, List[AccountHistory]]] = {
+  def cancelOrder(orderId: String) = {
+    val uri = s"$url/orders/$orderId"
+    authorizedDelete[CanceledOrders](uri)
+  }
+
+  def cancelAllOrders(productId: Option[String] = None) = {
+    val uri = s"$url/orders"
+    val params = Seq(productId.map("product_id" -> _)).flatten
+    authorizedDelete[CanceledOrders](uri, params:_*)
+  }
+
+  //def AccountHistory(account_id: String): Future[Either[ErrorCode, AccountHistory]] = {
   //  val uri = s"$url/$account_id/ledger"
-  //  authorizedGet[List[AccountHistory]](uri)
+  //  authorizedGet[AccountHistory](uri)
   //}
 
   private def baseOrderParams(orderType: OrderType, productId: String, side: Side, stp: Option[Boolean] = None, clientId: Option[String] = None): Seq[Option[(String, String)]] = {
@@ -106,9 +117,14 @@ class AuthenticatedGDaxClient(url: String) extends PublicGDaxClient(url) {
     import play.api.libs.ws.JsonBodyWritables._
     val requestBody = Json.obj(parameters.map(t => (t._1, Json.toJsFieldJsValueWrapper(t._2))): _*)
     logger.debug(s"Sent URI: $uri with body ${requestBody.toString()}")
-    println(requestBody.toString())
     val requestWithHeaders = addAuthorizationHeaders(ws.url(uri).withBody(requestBody).withMethod("POST"))
     requestWithHeaders.post(requestBody).map(parseResponse[A](_))
+  }
+
+  private def authorizedDelete[A: Reads](uri: String, parameters: (String, String)*): Future[Either[ErrorCode, A]] = {
+    logger.debug(s"Sent URI: $uri")
+    val requestWithHeaders = addAuthorizationHeaders(ws.url(uri).withQueryStringParameters(parameters: _*).withMethod("DELETE"))
+    requestWithHeaders.delete().map(parseResponse[A](_))
   }
 
   private def authorizedGet[A: Reads](uri: String, parameters: (String, String)*): Future[Either[ErrorCode, A]] = {

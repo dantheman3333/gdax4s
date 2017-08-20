@@ -3,7 +3,7 @@ package com.gdax.client
 import java.time.Instant
 
 import com.gdax.error._
-import com.gdax.models.OrderParams.Side
+import com.gdax.models.OrderParams.{CancelAfter, Side, TimeInForce}
 import com.gdax.models._
 import org.scalatest.{BeforeAndAfter, FunSuite}
 import play.api.libs.json.Json
@@ -50,12 +50,34 @@ class AuthenticatedGDaxClientSuite extends FunSuite with BeforeAndAfter {
     assert(coinbaseAccounts.isRight)
   }
 
-  //test("authenticatedClient.depositFromPaymentMethod should deposit") {
-    //val paymentMethods: List[PaymentMethod] = Await.result(client.paymentMethods(), 5.seconds).right.get.filter(_.limits.deposit.isDefined)
-    //val payments = paymentMethods.map(payment => Await.result(client.depositFromPaymentMethod(payment.limits.deposit.head.head.remaining.amount, "USD", payment.currency), 30.seconds))
-    //payments.foreach(println)
-    //payments.foreach(pay => assert(pay.isRight))
-  //}
+  test("authenticatedClient.depositFromPaymentMethod should deposit") {
+    val paymentMethods: List[PaymentMethod] = Await.result(client.paymentMethods(), 5.seconds).right.get
+    println(paymentMethods)
+    val payments = paymentMethods.filter(_.name.contains("TD Bank")).map(payment => Await.result(client.depositFromPaymentMethod(10.00, payment.currency, payment.id), 30.seconds))
+    payments.foreach(println)
+    payments.foreach(pay => assert(pay.isRight))
+  }
+
+  test("authenticatedClient.cancelOrder should delete an order") {
+    val orderResponse: LimitOrderResponse = Await.result(client.limitOrder("BTC-USD", Side.Sell, price = 5000.0, size = 2.0, cancelAfter = Some(CancelAfter.Min), timeInForce = Some(TimeInForce.GTT)), 5.seconds).right.get
+    println(orderResponse)
+
+    val cancelOrder: CanceledOrders = Await.result(client.cancelOrder(orderResponse.id), 5.seconds).right.get
+    println(cancelOrder)
+    assert(cancelOrder.ids.contains(orderResponse.id))
+  }
+
+  //doesn't really test all orders
+  test("authenticatedClient.cancelOrder should delete all orders") {
+    val orderResponse: LimitOrderResponse = Await.result(client.limitOrder("BTC-USD", Side.Sell, price = 5000.0, size = 2.0, cancelAfter = Some(CancelAfter.Min), timeInForce = Some(TimeInForce.GTT)), 5.seconds).right.get
+    Thread.sleep(500)
+    val orderResponse2: LimitOrderResponse = Await.result(client.limitOrder("BTC-USD", Side.Sell, price = 6000.0, size = 2.0, cancelAfter = Some(CancelAfter.Min), timeInForce = Some(TimeInForce.GTT)), 5.seconds).right.get
+    println(orderResponse)
+
+    val cancelOrder: CanceledOrders = Await.result(client.cancelAllOrders(), 5.seconds).right.get
+    println(cancelOrder)
+    assert(cancelOrder.ids.contains(orderResponse.id) && cancelOrder.ids.contains(orderResponse2.id))
+  }
 
   test("authenticatedClient.depositFromCoinBaseAccount should deposit") {
     val coinbaseAccount: CoinBaseAccount = Await.result(client.coinbaseAccounts(), 5.seconds).right.get.filter(_.balance > 10).head
@@ -65,7 +87,25 @@ class AuthenticatedGDaxClientSuite extends FunSuite with BeforeAndAfter {
   }
 
   test("authenticatedClient.limitOrder sell should create a sell order") {
-    val orderResponse: Either[ErrorCode, LimitOrderResponse] = Await.result(client.limitOrder("BTC-USD", Side.Sell, 4000.0, 2.0), 5.seconds)
+    val orderResponse: Either[ErrorCode, LimitOrderResponse] = Await.result(client.limitOrder("BTC-USD", Side.Sell, price = 4000.0, size = 2.0), 5.seconds)
+    println(orderResponse)
+    assert(orderResponse.isRight)
+  }
+
+  test("authenticatedClient.limitOrder sell should create a sell order with cancel 1 min") {
+    val orderResponse: Either[ErrorCode, LimitOrderResponse] = Await.result(client.limitOrder("BTC-USD", Side.Sell, price = 5000.0, size = 2.0, cancelAfter = Some(CancelAfter.Min), timeInForce = Some(TimeInForce.GTT)), 5.seconds)
+    println(orderResponse)
+    assert(orderResponse.isRight)
+  }
+
+  test("authenticatedClient.limitOrder sell should create a sell order with cancel 1 hour") {
+    val orderResponse: Either[ErrorCode, LimitOrderResponse] = Await.result(client.limitOrder("BTC-USD", Side.Sell, price = 6000.0, size = 2.0, cancelAfter = Some(CancelAfter.Hour), timeInForce = Some(TimeInForce.GTT)), 5.seconds)
+    println(orderResponse)
+    assert(orderResponse.isRight)
+  }
+
+  test("authenticatedClient.limitOrder sell should create a sell order with cancel 1 day") {
+    val orderResponse: Either[ErrorCode, LimitOrderResponse] = Await.result(client.limitOrder("BTC-USD", Side.Sell, price = 7000.0, size = 2.0, cancelAfter = Some(CancelAfter.Day), timeInForce = Some(TimeInForce.GTT)), 5.seconds)
     println(orderResponse)
     assert(orderResponse.isRight)
   }
@@ -87,5 +127,7 @@ class AuthenticatedGDaxClientSuite extends FunSuite with BeforeAndAfter {
     assert(orderResponse.isRight)
     assert(orderResponseFunds.isRight)
   }
+
+
 
 }
