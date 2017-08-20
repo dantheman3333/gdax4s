@@ -105,14 +105,14 @@ object ImplicitsReads {
       (__ \ "currency").read[String]
     ) (Account.apply _)
 
-  implicit val OrderResponseReads: Reads[OrderResponse] = (
+  implicit val OrderResponseReads: Reads[LimitOrderResponse] = (
     (__ \ "id").read[String] and
       (__ \ "price").read[String].map[Double](_.toDouble) and
       (__ \ "size").read[String].map[Double](_.toDouble) and
       (__ \ "product_id").read[String] and
       (__ \ "side").read[String] and
       (__ \ "stp").read[String] and
-      (__ \ "`type`").read[String] and
+      (__ \ "type").read[String] and
       (__ \ "time_in_force").read[String] and
       (__ \ "post_only").read[Boolean] and
       (__ \ "created_at").read[Instant] and
@@ -121,7 +121,24 @@ object ImplicitsReads {
       (__ \ "executed_value").read[String].map[Double](_.toDouble) and
       (__ \ "status").read[String] and
       (__ \ "settled").read[Boolean]
-    ) (OrderResponse.apply _)
+    ) (LimitOrderResponse.apply _)
+
+
+  implicit val MarketAndStopOrderResponseReads: Reads[MarketAndStopOrderResponse] = (
+    (__ \ "id").read[String] and
+      (__ \ "size").read[String].map[Double](_.toDouble) and
+      (__ \ "product_id").read[String] and
+      (__ \ "side").read[String] and
+      (__ \ "stp").read[String] and
+      (__ \ "type").read[String] and
+      (__ \ "post_only").read[Boolean] and
+      (__ \ "created_at").read[Instant] and
+      (__ \ "fill_fees").read[String].map[Double](_.toDouble) and
+      (__ \ "filled_size").read[String].map[Double](_.toDouble) and
+      (__ \ "executed_value").read[String].map[Double](_.toDouble) and
+      (__ \ "status").read[String] and
+      (__ \ "settled").read[Boolean]
+    ) (MarketAndStopOrderResponse.apply _)
 
   implicit val CoinBaseDepositRead: Reads[CoinBaseDeposit] = (
     (__ \ "id").read[String] and

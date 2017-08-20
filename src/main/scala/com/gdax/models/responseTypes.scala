@@ -29,10 +29,15 @@ case class Candle(time: Instant, low: Double, high: Double, open: Double, close:
 
 case class DailyStats(open: Double, high: Double, low: Double, volume: Double)
 
-case class OrderResponse(id: String, price: Double, size: Double, product_id: String, side: String,
-                         stp: String, `type`: String, time_in_force: String, post_only: Boolean,
-                         created_at: Instant, fill_fees: Double, filled_size: Double,
-                         executed_value: Double, status: String, settled: Boolean)
+case class LimitOrderResponse(id: String, price: Double, size: Double, product_id: String, side: String,
+                              stp: String, `type`: String, time_in_force: String, post_only: Boolean,
+                              created_at: Instant, fill_fees: Double, filled_size: Double,
+                              executed_value: Double, status: String, settled: Boolean)
+
+case class MarketAndStopOrderResponse(id: String, size: Double, product_id: String, side: String,
+                                      stp: String, `type`: String, post_only: Boolean,
+                                      created_at: Instant, fill_fees: Double, filled_size: Double,
+                                      executed_value: Double, status: String, settled: Boolean)
 
 case class AccountWithProfile(id: String, currency: String, balance: Double, available: Double, hold: Double, profile_id: String)
 

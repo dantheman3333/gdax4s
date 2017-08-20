@@ -37,7 +37,7 @@ abstract class GDaxClient(url: String) {
       }
     } else {
       logger.debug(s"Response Error: ${response.status}.")
-      Left(RequestError(response.status))
+      Left(RequestError(response.status, response.body))
     }
   }
 
