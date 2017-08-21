@@ -245,12 +245,19 @@ object ImplicitsReads {
         (__ \ "sepa_deposit_information").readNullable[SepaDepositInformation]
     ) (CoinBaseAccount.apply _)
 
-  //implicit val AccountHistoryReads: Reads[AccountHistory] = (
-  //  (__ \ "id").read[String] and
-  //    (__ \ "created_at").read[String] and
-  //    (__ \ "amount").read[String].map[Double](_.toDouble) and
-  //    (__ \ "balance").read[String].map[Double](_.toDouble) and
-  //    (__ \ "type").read[String] and
-  //    (__ \ "details").read[Details]
-  //  ) (AccountHistory.apply _)
+  implicit val DetailsRead: Reads[Details] = (
+    (__ \ "order_id").read[String] and
+      (__ \ "trade_id").read[String] and
+      (__ \ "product_id").read[String]
+    )(Details.apply _)
+
+  implicit val AccountHistoryReads: Reads[AccountHistory] = (
+    (__ \ "id").read[String] and
+      (__ \ "created_at").read[Instant] and
+      (__ \ "amount").read[String].map[Double](_.toDouble) and
+      (__ \ "balance").read[String].map[Double](_.toDouble) and
+      (__ \ "type").read[String] and
+      (__ \ "details").readNullable[Details]
+    ) (AccountHistory.apply _)
+
 }
