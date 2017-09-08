@@ -126,10 +126,12 @@ object ImplicitsReads {
 
   implicit val MarketAndStopOrderResponseReads: Reads[MarketAndStopOrderResponse] = (
     (__ \ "id").read[String] and
-      (__ \ "size").read[String].map[Double](_.toDouble) and
+      (__ \ "size").readNullable[String].map[Option[Double]](_.map(_.toDouble)) and
       (__ \ "product_id").read[String] and
       (__ \ "side").read[String] and
       (__ \ "stp").read[String] and
+      (__ \ "funds").readNullable[String].map[Option[Double]](_.map(_.toDouble)) and
+      (__ \ "specified_funds").readNullable[String].map[Option[Double]](_.map(_.toDouble)) and
       (__ \ "type").read[String] and
       (__ \ "post_only").read[Boolean] and
       (__ \ "created_at").read[Instant] and

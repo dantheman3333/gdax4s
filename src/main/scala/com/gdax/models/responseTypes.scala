@@ -34,8 +34,8 @@ case class LimitOrderResponse(id: String, price: Double, size: Double, product_i
                               created_at: Instant, fill_fees: Double, filled_size: Double,
                               executed_value: Double, status: String, settled: Boolean)
 
-case class MarketAndStopOrderResponse(id: String, size: Double, product_id: String, side: String,
-                                      stp: String, `type`: String, post_only: Boolean,
+case class MarketAndStopOrderResponse(id: String, size: Option[Double], product_id: String, side: String,
+                                      stp: String, funds: Option[Double], specified_funds: Option[Double], `type`: String, post_only: Boolean,
                                       created_at: Instant, fill_fees: Double, filled_size: Double,
                                       executed_value: Double, status: String, settled: Boolean)
 
