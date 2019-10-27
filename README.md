@@ -1,5 +1,7 @@
 # gdax4s
 
+### GDAX has shut down. This repository is archived 
+
 ### An unoffical Scala API for the [GDAX coin exchange](https://www.gdax.com/trade/BTC-USD)
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
